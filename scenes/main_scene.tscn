@@ -1,0 +1,104 @@
+[gd_scene load_steps=15 format=3 uid="uid://bt7gua3gcby0k"]
+
+[ext_resource type="PackedScene" uid="uid://c3w5r475882yj" path="res://scenes/player.tscn" id="1_bpx2c"]
+[ext_resource type="Shader" path="res://shaders/portal.gdshader" id="2_axjrt"]
+[ext_resource type="PackedScene" uid="uid://dqb5tavc7yy6p" path="res://scenes/portal.tscn" id="2_u0gn3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iucp7"]
+size = Vector3(20.7351, 1, 33.0283)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ggyrm"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pj8kd"]
+size = Vector3(3.615, 5.165, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hh07q"]
+albedo_color = Color(0.902733, 0.193619, 0.139119, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v4nge"]
+albedo_color = Color(0.0380281, 0, 0.441788, 1)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_qyjga"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ufgf8"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_axjrt")
+shader_parameter/portal_tex = SubResource("ViewportTexture_qyjga")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dvmbv"]
+resource_local_to_scene = true
+size = Vector3(3.60596, 5.30331, 0.86676)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_nsqy3"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j5dk1"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_axjrt")
+shader_parameter/portal_tex = SubResource("ViewportTexture_nsqy3")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g4wqb"]
+resource_local_to_scene = true
+size = Vector3(3.60596, 5.30331, 0.86676)
+
+[node name="Node" type="Node"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_iucp7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D/CollisionShape3D"]
+transform = Transform3D(20.58, 0, 0, 0, 1, 0, 0, 0, 32.725, 0, 0, 0)
+mesh = SubResource("BoxMesh_ggyrm")
+skeleton = NodePath("../../..")
+
+[node name="Player" parent="." instance=ExtResource("1_bpx2c")]
+SPEED = 8.0
+SPRINT_MUL = 1.5
+
+[node name="Camera" parent="Player" index="1"]
+cull_mask = 1048575
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 6, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.38107, 3.08585, -12.2686)
+mesh = SubResource("BoxMesh_pj8kd")
+surface_material_override/0 = SubResource("StandardMaterial3D_hh07q")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5983, 3.08585, -12.2686)
+mesh = SubResource("BoxMesh_pj8kd")
+surface_material_override/0 = SubResource("StandardMaterial3D_v4nge")
+
+[node name="PortalMesh" parent="." node_paths=PackedStringArray("portal_destination", "player_cam") instance=ExtResource("2_u0gn3")]
+transform = Transform3D(0.999276, 0, -0.0380565, 0, 1, 0, 0.0380565, 0, 0.999276, 4.59404, 3.21466, -10.0745)
+surface_material_override/0 = SubResource("ShaderMaterial_ufgf8")
+portal_destination = NodePath("../PortalMesh2")
+player_cam = NodePath("../Player/Camera")
+
+[node name="Area3D" parent="PortalMesh" index="1"]
+transform = Transform3D(1, 0, -3.72529e-09, 0, 1, 0, 3.72529e-09, 0, 1, -4.76837e-07, 0, 0.442185)
+
+[node name="CollisionShape3D" parent="PortalMesh/Area3D" index="0"]
+shape = SubResource("BoxShape3D_dvmbv")
+
+[node name="PortalMesh2" parent="." node_paths=PackedStringArray("portal_destination", "player_cam") instance=ExtResource("2_u0gn3")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 4.60642, 3.03702, -1.94963)
+layers = 8
+surface_material_override/0 = SubResource("ShaderMaterial_j5dk1")
+portal_destination = NodePath("../PortalMesh")
+player_cam = NodePath("../Player/Camera")
+cull_layer = 4
+
+[node name="CollisionShape3D" parent="PortalMesh2/Area3D" index="0"]
+shape = SubResource("BoxShape3D_g4wqb")
+
+[editable path="Player"]
+[editable path="PortalMesh"]
+[editable path="PortalMesh2"]
