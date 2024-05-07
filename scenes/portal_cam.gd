@@ -29,6 +29,9 @@ func _process(_delta):
 	portal_cam.fov = player_cam.fov
 	portal_cam.cull_mask = player_cam.cull_mask
 	
+	#Don't render the portal itself in its cam (this is to make recursive portals work)
+	portal_cam.set_cull_mask_value(cull_layer, false)
+	
 	if portal_destination.cull_layer:
 		portal_cam.set_cull_mask_value(portal_destination.cull_layer, false)
 	
